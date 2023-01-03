@@ -19,6 +19,15 @@ public enum ParseError: Error {
     
     /// The current directory is not a repository
     case notARepository
+    
+    /// Trying to parse a commit without a hash
+    case commitWithoutCommmitHash
+    
+    /// Trying to parse a commit without author
+    case commitWithoutAuthor
+    
+    /// Trying to parse a commit without date
+    case commitWithoutDate
 }
 
 /// A protocol all parse results have to conform to.
