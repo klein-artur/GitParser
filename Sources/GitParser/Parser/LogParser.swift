@@ -26,14 +26,20 @@ public class LogResultParser: GitParser, Parser {
             return .failure(error)
         }
         
-        if result.contains("fatal") {
+        if result.hasPrefix("fatal: "){
             return .success(LogResult(originalOutput: result, commits: []))
         }
         
         do {
-            let commits = try result.split(separator: "commit ")
+            let matches = result.find(rgx: #"commit\s([0-9a-fA-F]{40})(?:\s\(([^\n]+)\))?\nAuthor:\s([^\n]+)\s<([^\n]*)>\nDate:\s+([^\n]+)\n([\s\S]*?)(?=commit\s[0-9a-fA-F]{40}(?:\s\([^\n]+\))?\nAuthor:[^\n]+\nDate:[^\n]+|\Z)"#, options: .anchored)
+            
+            var counter = 0
+            print("Has \(matches.count) results.")
+            let commits = try matches
                 .map { commitPart in
-                    try parseCommit(part: String(commitPart))
+                    counter += 1
+                    print("parsing result \(counter)")
+                    return try parseCommit(part: commitPart)
                 }
             
             return .success(LogResult(originalOutput: result, commits: commits))
@@ -46,32 +52,37 @@ public class LogResultParser: GitParser, Parser {
         }
     }
     
-    private func parseCommit(part: String) throws -> Commit {
-        guard let commitHash = part.find(rgx: #"([a-fA-F0-9]{40})\s"#).first?[1] else {
+    private func parseCommit(part: RgxResult) throws -> Commit {
+        guard let commitHash = part[1] else {
             throw ParseError.commitWithoutCommmitHash
         }
         
-        let (branches, tags) = parseBranchesAndTags(in: part)
+        guard let authorName = part[3], let authorEmail = part[4] else {
+            throw ParseError.commitWithoutAuthor
+        }
+        
+        guard let date = part[5]?.toDate(format: "EEE MMM dd HH:mm:ss yyyy ZZZZ") else {
+            throw ParseError.commitWithoutDate
+        }
+        
+        let (branches, tags) = parseBranchesAndTags(in: part[2] ?? "")
         
         return Commit(
             hash: commitHash,
-            message: parseMessage(in: part),
-            author: try parseAuthor(in: part),
-            date: try parseDate(in: part),
+            message: part[6]?.replace(rgx: #"\n\s*"#, with: "\n").trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+            author: Person(name: authorName, email: authorEmail),
+            date: date,
             branches: branches,
             tags: tags
         )
     }
     
     private func parseBranchesAndTags(in part: String) -> ([String], [String]) {
-        guard let branchPart = part.find(rgx: #"[a-fA-F0-9]{40}\s\((.+)\)"#).first?[1] else {
-            return ([], [])
-        }
         
         var branches = [String]()
         var tags = [String]()
         
-        branchPart.split(separator: ", ")
+        part.split(separator: ", ")
             .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
             .forEach { string in
                 if !string.contains(":") {
@@ -90,25 +101,6 @@ public class LogResultParser: GitParser, Parser {
             }
         
         return (branches, tags)
-    }
-    
-    private func parseAuthor(in part: String) throws -> Person {
-        guard let foundAuthor = part.find(rgx: #"Author:\s(.*)\s<(.*)>"#).first else {
-            throw ParseError.commitWithoutAuthor
-        }
-        
-        return Person(
-            name: foundAuthor[1] ?? "",
-            email: foundAuthor[2] ?? ""
-        )
-    }
-    
-    private func parseDate(in part: String) throws -> Date {
-        guard let foundDate = part.find(rgx: #"Date:\s+(.*)"#).first, let date = foundDate[1]?.toDate(format: "EEE MMM dd HH:mm:ss yyyy ZZZZ") else {
-            throw ParseError.commitWithoutDate
-        }
-        
-        return date
     }
     
     private func parseMessage(in part: String) -> String {

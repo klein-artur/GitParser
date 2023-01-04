@@ -9,9 +9,9 @@ import Foundation
 
 struct RgxResult {
     private let textCheckingResult: NSTextCheckingResult
-    private let baseString: String
+    private let baseString: NSString
     
-    init(_ result: NSTextCheckingResult, _ baseString: String) {
+    fileprivate init(_ result: NSTextCheckingResult, _ baseString: NSString) {
         self.textCheckingResult = result
         self.baseString = baseString
     }
@@ -22,12 +22,14 @@ extension String {
         try? NSRegularExpression(pattern: self, options: [])
     }
     
-    func find(rgx pattern: String) -> [RgxResult] {
-        pattern.rgx?.matches(in: self, options: [], range: 0<!>self.count)
+    func find(rgx pattern: String, options: NSRegularExpression.MatchingOptions = []) -> [RgxResult] {
+        let baseString = NSString(string: self)
+        
+        return pattern.rgx?.matches(in: self, options: options, range: 0<!>baseString.length)
             .map {
                 RgxResult(
                     $0,
-                    self
+                    baseString
                 )
             } ?? []
     }
@@ -46,7 +48,8 @@ extension RgxResult {
         guard textCheckingResult.range(at: index).location != NSNotFound else {
             return nil
         }
-        return String(baseString[Range(textCheckingResult.range(at: index), in: baseString)!])
+        
+        return baseString.substring(with: textCheckingResult.range(at: index))
     }
 }
 
