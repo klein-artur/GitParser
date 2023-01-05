@@ -11,6 +11,12 @@ public struct LogResult: ParseResult {
     public var originalOutput: String
     
     public var commits: [Commit]?
+    
+    /// Ther commits with a nine digit commit has as key.
+    public var commitShortDict: [String: Commit]?
+    
+    /// Ther commits with the commit has as key.
+    public var commitLongDict: [String: Commit]?
 }
 
 public class LogResultParser: GitParser, Parser {
@@ -31,18 +37,27 @@ public class LogResultParser: GitParser, Parser {
         }
         
         do {
-            let matches = result.find(rgx: #"commit\s([0-9a-fA-F]{40})(?:\s\(([^\n]+)\))?\nAuthor:\s([^\n]+)\s<([^\n]*)>\nDate:\s+([^\n]+)\n([\s\S]*?)(?=commit\s[0-9a-fA-F]{40}(?:\s\([^\n]+\))?\nAuthor:[^\n]+\nDate:[^\n]+|\Z)"#, options: .anchored)
+            let matches = result.find(rgx: #"commit\s([0-9a-fA-F]{40})(?:\s\(([^\n]+)\))?(?:\nMerge:\s([A-Fa-f0-9]{9})\s([A-Fa-f0-9]{9}))?\nAuthor:\s([^\n]+)\s<([^\n]*)>\nDate:\s+([^\n]+)\n([\s\S]*?)(?=commit\s[0-9a-fA-F]{40}(?:\s\([^\n]+\))?(?:\nMerge:\s([A-Fa-f0-9]{9})\s([A-Fa-f0-9]{9}))?\nAuthor:[^\n]+\nDate:[^\n]+|\Z)"#, options: .anchored)
             
-            var counter = 0
-            print("Has \(matches.count) results.")
-            let commits = try matches
-                .map { commitPart in
-                    counter += 1
-                    print("parsing result \(counter)")
-                    return try parseCommit(part: commitPart)
-                }
+            var commits = [Commit]()
+            var commitsShort = [String: Commit]()
+            var commitsLong = [String: Commit]()
             
-            return .success(LogResult(originalOutput: result, commits: commits))
+            for match in matches {
+                let commit = try parseCommit(part: match)
+                commits.append(commit)
+                commitsLong[commit.hash] = commit
+                commitsShort[String(commit.hash.prefix(9))] = commit
+            }
+            
+            return .success(
+                LogResult(
+                    originalOutput: result,
+                    commits: commits,
+                    commitShortDict: commitsShort,
+                    commitLongDict: commitsLong
+                )
+            )
         } catch {
             if let parseError = error as? ParseError {
                 return .failure(parseError)
@@ -57,23 +72,31 @@ public class LogResultParser: GitParser, Parser {
             throw ParseError.commitWithoutCommmitHash
         }
         
-        guard let authorName = part[3], let authorEmail = part[4] else {
+        guard let authorName = part[5], let authorEmail = part[6] else {
             throw ParseError.commitWithoutAuthor
         }
         
-        guard let date = part[5]?.toDate(format: "EEE MMM dd HH:mm:ss yyyy ZZZZ") else {
+        guard let date = part[7]?.toDate(format: "EEE MMM dd HH:mm:ss yyyy ZZZZ") else {
             throw ParseError.commitWithoutDate
         }
         
         let (branches, tags) = parseBranchesAndTags(in: part[2] ?? "")
         
+        let merges: [String] = [
+            part[3],
+            part[4]
+        ]
+            .filter { $0 != nil }
+            .map { $0! }
+        
         return Commit(
             hash: commitHash,
-            message: part[6]?.replace(rgx: #"\n\s*"#, with: "\n").trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+            message: part[8]?.replace(rgx: #"\n\s*"#, with: "\n").trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
             author: Person(name: authorName, email: authorEmail),
             date: date,
             branches: branches,
-            tags: tags
+            tags: tags,
+            merges: merges
         )
     }
     

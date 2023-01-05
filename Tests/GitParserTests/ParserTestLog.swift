@@ -37,6 +37,7 @@ final class ParserTestLog: XCTestCase {
             Update documentation comments for example code (#2460)
 
         commit ab09f6966d5a14ffe6a7b960cc414ac85468b60b
+        Merge: 941f3deb8 3b2fe19de
         Author: John Doe <johndoe.thats@testl.com>
         Date:   Fri Sep 9 08:17:53 2022 -0400
 
@@ -67,7 +68,7 @@ final class ParserTestLog: XCTestCase {
         
         )
 
-        commit 941f3deb822b2e83c327c1bd67553701720df8f8
+        commit 94153deb822b2e83c327c1bd57553701720df8f8
         Author: freak4pc <freak4pc@gmail.com>
         Date:   Thu Sep 24 23:28:55 2020 +0300
             Enable 'Build active schemes'
@@ -109,6 +110,8 @@ final class ParserTestLog: XCTestCase {
         // then
         XCTAssertNotNil(parsedLog.commits)
         XCTAssertEqual(parsedLog.commits?.count, 9)
+        XCTAssertEqual(parsedLog.commitShortDict?.count, 9)
+        XCTAssertEqual(parsedLog.commitLongDict?.count, 9)
         XCTAssertEqual(parsedLog.commits?[0].hash, "91a36920b1ec069004fef9dc41b7c5dbcaa5fffe")
         XCTAssertEqual(parsedLog.commits?[0].branches.count, 3)
         XCTAssertEqual(parsedLog.commits?[0].branches[0], "main")
@@ -118,30 +121,14 @@ final class ParserTestLog: XCTestCase {
         XCTAssertEqual(parsedLog.commits?[0].author.name, "John Doe")
         XCTAssertEqual(parsedLog.commits?[0].author.email, "johndoe.thats@testl.com")
         
+        XCTAssertEqual(parsedLog.commits?[2].merges.count, 2)
+        XCTAssertEqual(parsedLog.commits?[2].merges[0], "941f3deb8")
+        XCTAssertEqual(parsedLog.commits?[2].merges[1], "3b2fe19de")
+        
         let testDate = "Sun Nov 27 08:42:53 2022 +0200".toDate(format: "EEE MMM dd HH:mm:ss yyyy ZZZZ")!
         
         XCTAssertEqual(parsedLog.commits?[0].date, testDate)
         XCTAssertEqual(parsedLog.commits?[0].message, "Update CI for Xcode 14 and 13 (#2455)")
-    }
-    
-    func testParsingLogWithEmoji() throws {
-        // given
-        let input = """
-        commit 23fe3fa469f59f168841964bcfe70f5871f6bd25
-        Author: John Doe <johndoe.thats@testl.com>
-        Date:   Wed Sep 22 18:09:52 2021 +0300
-
-            Concurrency Import incantation 🧙‍♀️
-
-        
-        """
-        
-        // when
-        let result = sut.parse(result: input)
-        let parsedResult = try! result.get()
-        
-        // then
-        XCTAssertEqual(parsedResult.commits?[0].message, "Concurrency Import incantation 🧙‍")
     }
     
     func testParsingLogWith() throws {

@@ -14,6 +14,7 @@ public class Commit: HasHash {
     public var date: Date
     public var branches: [String]
     public var tags: [String]
+    public var merges: [String]
     
     init(
         hash: String,
@@ -21,7 +22,8 @@ public class Commit: HasHash {
         author: Person,
         date: Date,
         branches: [String],
-        tags: [String]
+        tags: [String],
+        merges: [String]
     ) {
         self.hash = hash
         self.message = message
@@ -29,5 +31,6 @@ public class Commit: HasHash {
         self.date = date
         self.branches = branches
         self.tags = tags
+        self.merges = merges
     }
 }
