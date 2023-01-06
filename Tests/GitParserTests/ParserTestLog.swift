@@ -24,83 +24,92 @@ final class ParserTestLog: XCTestCase {
     func testParsingGitLog() throws {
         // given
         let input = """
-        commit 91a36920b1ec069004fef9dc41b7c5dbcaa5fffe (HEAD -> main, tag: testtag, origin/main, origin/HEAD)
-        Author: John Doe <johndoe.thats@testl.com>
-        Date:   Sun Nov 27 08:42:53 2022 +0200
-
-            Update CI for Xcode 14 and 13 (#2455)
-
-        commit 8ec08deca8271516f673706e78fb954797cd6627
-        Author: John Doé <johndoe.thats@testl.com>
-        Date:   Mon Oct 24 18:31:05 2022 +0900
-
-            Update documentation comments for example code (#2460)
-
-        commit ab09f6966d5a14ffe6a7b960cc414ac85468b60b
-        Merge: 941f3deb8 3b2fe19de
-        Author: John Doe <johndoe.thats@testl.com>
-        Date:   Fri Sep 9 08:17:53 2022 -0400
-
-            Table/CollectionViewDelegateProxy crash workaround
-            
-            Implement crash workaround discussed here https://github.com/ReactiveX/RxSwift/issues/2428 until a more permanent solution is found
-
-        commit 3b2fe19de57720f4a6505a5f9982c5b801f753a1
-        Author: John Doe <johndoe.thats@testl.com>
-        Date:   Tue Sep 27 10:41:55 2022 -0700
-
-            Fix grammar in README.md
-
-        commit 23fe3fa469f59f168841964bcfe70f5871f6bd25
-        Author: John Doe <johndoe.thats@testl.com>
-        Date:   Wed Sep 22 18:09:52 2021 +0300
-
-            Concurrency Import incantation
-
-        commit 941f3deb822b2e83c327c1bd67553701720df8f8
-        Author: John Doe <>
-        Date:   Thu Sep 24 23:28:55 2020 +0300
-            Enable 'Build active schemes'
-            
-            (cherry picked from
+        <<<----mCommitm---->>>
+        67faa10
+         (HEAD -> main, origin/main, tag: test)
+        67faa10a224db86ef4e796ab0a14b056ad4001a6
+        da4830b5ef3697795ec38d59044291a6b2135214
+        John Doe <johndoe.thats@testl.com>
+        Fri, 6 Jan 2023 13:07:35 +0100
+        John Doe <johndoe.thats@testl.com>
+        Fri, 6 Jan 2023 13:07:35 +0100
+        More hash handling improvements
+        <<<----mCommitm---->>>
+        da4830b
         
-        commit 682a75ad45f9b1ffb697b67b8b47cd9af5d50fe4
+        da4830b5ef3697795ec38d59044291a6b2135214
+        8258f9663d1fbde63d97ac9a387f6a3dddf4b801
+        John Doe <johndoe.thats@testl.com>
+        Fri, 6 Jan 2023 12:15:27 +0100
+        John Doe <johndoe.thats@testl.com>
+        Fri, 6 Jan 2023 12:15:27 +0100
+        improved Hash Handling
+        <<<----mCommitm---->>>
+        8258f96
         
-        )
-
-        commit 94153deb822b2e83c327c1bd57553701720df8f8
-        Author: freak4pc <freak4pc@gmail.com>
-        Date:   Thu Sep 24 23:28:55 2020 +0300
-            Enable 'Build active schemes'
-            
-            (cherry picked from commit 682a75ad45f9b1ffb697b67b8b47cd9af5d50fe4)
-
-        commit a5fb5808e2bcd2cab1bf663d4a4738c842eab5c8
-        Author: John Doe <johndoe.thats@testl.com>
-        Date:   Tue Apr 5 22:23:09 2022 +0000
-
-            Bump cocoapods-downloader from 1.4.0 to 1.6.3
-            
-            Bumps [cocoapods-downloader](https://github.com/CocoaPods/cocoapods-downloader) from 1.4.0 to 1.6.3.
-            - [Release notes](https://github.com/CocoaPods/cocoapods-downloader/releases)
-            - [Changelog](https://github.com/CocoaPods/cocoapods-downloader/blob/master/CHANGELOG.md)
-            - [Commits](https://github.com/CocoaPods/cocoapods-downloader/compare/1.4.0...1.6.3)
-            
-            ---
-            updated-dependencies:
-            - dependency-name: cocoapods-downloader
-              dependency-type: indirect
-            ...
-            
-            Signed-off-by: dependabot[bot] <support@github.com>
-
-        commit a9cf4550d5b57c9bc0f04a8c54a33e041a378fb4
-        Author: John Doe <johndoe.thats@testl.com>
-        Date:   Tue May 24 13:42:45 2022 +0900
-
-            Fix: Class Unavailable on Main.storyboard (#2412)
-
-
+        8258f9663d1fbde63d97ac9a387f6a3dddf4b801
+        b4dd6c93eec0df86b12055739db31491c59c8517 1050a3c5f6343e1bb6073df2a67566d47c11e6b2
+        John Doe <johndoe.thats@testl.com>
+        Thu, 5 Jan 2023 01:37:33 +0100
+        John Doe <johndoe.thats@testl.com>
+        Thu, 5 Jan 2023 01:37:33 +0100
+        Merge branch 'main' of github.com:klein-artur/GitParser
+        <<<----mCommitm---->>>
+        b4dd6c9
+        
+        b4dd6c93eec0df86b12055739db31491c59c8517
+        258ae77965e33e9885dcc8072db5f53e3bd7f22f
+        John Doe <johndoe.thats@testl.com>
+        Thu, 5 Jan 2023 01:37:17 +0100
+        John Doe <johndoe.thats@testl.com>
+        Thu, 5 Jan 2023 01:37:17 +0100
+        Adding parent commits to commit
+        And more
+        
+        lines of
+        
+        message
+        
+        stuff
+        <<<----mCommitm---->>>
+        1050a3c
+        
+        1050a3c5f6343e1bb6073df2a67566d47c11e6b2
+        258ae77965e33e9885dcc8072db5f53e3bd7f22f
+        John Doe <johndoe.thats@testl.com>
+        Wed, 4 Jan 2023 22:15:24 +0100
+        GitHub <noreply@github.com>
+        Wed, 4 Jan 2023 22:15:24 +0100
+        Update README.md<<<----mCommitm---->>>
+        258ae77
+        
+        258ae77965e33e9885dcc8072db5f53e3bd7f22f
+        3c393184a116f4cbfa55aeb68ca39818e76dd870
+        John Doe <johndoe.thats@testl.com>
+        Wed, 4 Jan 2023 14:17:40 +0100
+        John Doe <johndoe.thats@testl.com>
+        Wed, 4 Jan 2023 14:17:40 +0100
+        parsing commitlist
+        <<<----mCommitm---->>>
+        3c39318
+        
+        3c393184a116f4cbfa55aeb68ca39818e76dd870
+        01edf9e57f55d457ca84072b1a0702ba97b58c98
+        John Doe <johndoe.thats@testl.com>
+        Tue, 3 Jan 2023 23:26:46 +0100
+        John Doe <johndoe.thats@testl.com>
+        Tue, 3 Jan 2023 23:26:46 +0100
+        Parsing logs
+        <<<----mCommitm---->>>
+        01edf9e
+        
+        01edf9e57f55d457ca84072b1a0702ba97b58c98
+        
+        John Doe <johndoe.thats@testl.com>
+        Tue, 3 Jan 2023 00:18:13 +0100
+        John Doe <johndoe.thats@testl.com>
+        Tue, 3 Jan 2023 17:14:57 +0100
+        Initial Commit
         """
         
         // when
@@ -109,49 +118,36 @@ final class ParserTestLog: XCTestCase {
         
         // then
         XCTAssertNotNil(parsedLog.commits)
-        XCTAssertEqual(parsedLog.commits?.count, 9)
-        XCTAssertEqual(parsedLog.commitShortDict?.count, 9)
-        XCTAssertEqual(parsedLog.commitLongDict?.count, 9)
-        XCTAssertEqual(parsedLog.commits?[0].hash, "91a36920b1ec069004fef9dc41b7c5dbcaa5fffe")
-        XCTAssertEqual(parsedLog.commits?[0].branches.count, 3)
+        XCTAssertEqual(parsedLog.commits?.count, 8)
+        XCTAssertEqual(parsedLog.commits?[0].objectHash, "67faa10a224db86ef4e796ab0a14b056ad4001a6")
+        XCTAssertEqual(parsedLog.commits?[0].branches.count, 2)
         XCTAssertEqual(parsedLog.commits?[0].branches[0], "main")
         XCTAssertEqual(parsedLog.commits?[0].branches[1], "origin/main")
         XCTAssertEqual(parsedLog.commits?[0].tags.count, 1)
-        XCTAssertEqual(parsedLog.commits?[0].tags[0], "testtag")
+        XCTAssertEqual(parsedLog.commits?[0].tags[0], "test")
         XCTAssertEqual(parsedLog.commits?[0].author.name, "John Doe")
         XCTAssertEqual(parsedLog.commits?[0].author.email, "johndoe.thats@testl.com")
         
-        XCTAssertEqual(parsedLog.commits?[2].merges.count, 2)
-        XCTAssertEqual(parsedLog.commits?[2].merges[0], "941f3deb8")
-        XCTAssertEqual(parsedLog.commits?[2].merges[1], "3b2fe19de")
+        XCTAssertEqual(parsedLog.commits?[2].parents.count, 2)
+        XCTAssertEqual(parsedLog.commits?[2].parents[0], "b4dd6c93eec0df86b12055739db31491c59c8517")
+        XCTAssertEqual(parsedLog.commits?[2].parents[1], "1050a3c5f6343e1bb6073df2a67566d47c11e6b2")
         
-        let testDate = "Sun Nov 27 08:42:53 2022 +0200".toDate(format: "EEE MMM dd HH:mm:ss yyyy ZZZZ")!
+        let testDate = "Fri, 6 Jan 2023 13:07:35 +0100".toDate(format: "EEE, dd MMM yyyy HH:mm:ss ZZZZ")!
         
-        XCTAssertEqual(parsedLog.commits?[0].date, testDate)
-        XCTAssertEqual(parsedLog.commits?[0].message, "Update CI for Xcode 14 and 13 (#2455)")
-    }
-    
-    func testParsingLogWith() throws {
-        // given
-        let input = """
-        commit b56f7a426e0c4bf4a5a2caec5dfd80fd347f9686
-        Author: John Doé <johndoe.thats@testl.com>
-        Date:   Wed Feb 3 11:08:08 2021 +0100
+        XCTAssertEqual(parsedLog.commits?[0].authorDate, testDate)
+        XCTAssertEqual(parsedLog.commits?[0].message, "More hash handling improvements")
         
-            remove link with libswiftXCTest.dylib deprecated and now removed on iOS 14.5Beta, instead use its replacement, libXCTestSwiftSupport.dylib using ENABLE_TESTING_SEARCH_PATHS = YES.
+        let otherTest = """
+        Adding parent commits to commit
+        And more
         
+        lines of
         
+        message
+        
+        stuff
         """
         
-        // when
-        let result = sut.parse(result: input)
-        let parsedResult = try! result.get()
-        
-        // then
-        
-        let testDate = "Wed Feb 3 11:08:08 2021 +0100".toDate(format: "EEE MMM dd HH:mm:ss yyyy ZZZZ")!
-        
-        XCTAssertEqual(parsedResult.commits?[0].date, testDate)
+        XCTAssertEqual(parsedLog.commits?[3].message, otherTest)
     }
-
 }

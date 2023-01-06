@@ -10,6 +10,7 @@ import Foundation
 /// Represents objects that have a hash.
 public protocol HasHash: Hashable {
     var objectHash: String { get }
+    var shortHash: String { get }
 }
 
 public extension HasHash {

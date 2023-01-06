@@ -28,6 +28,9 @@ public enum ParseError: Error {
     
     /// Trying to parse a commit without date
     case commitWithoutDate
+    
+    /// The log has wrong format. Please use the correct pretty format.
+    case wrongLogFormat
 }
 
 /// A protocol all parse results have to conform to.

@@ -12,139 +12,31 @@ public class LogResult: ParseResult {
     
     public var commits: [Commit]?
     
-    private var commitDict3: [String: Commit]?
-    private var commitDict4: [String: Commit]?
-    private var commitDict5: [String: Commit]?
-    private var commitDict6: [String: Commit]?
-    private var commitDict7: [String: Commit]?
-    private var commitDict8: [String: Commit]?
-    private var commitDict9: [String: Commit]?
-    private var commitDict10: [String: Commit]?
-    private var commitDict11: [String: Commit]?
-    private var commitDict12: [String: Commit]?
-    
     /// Ther commits with the commit hash as key.
     public var commitDict: [String: Commit]?
     
     public init(
         originalOutput: String,
         commits: [Commit]? = nil,
-        commitDict: [String : Commit]? = nil,
-        commitDict3: [String : Commit]? = nil,
-        commitDict4: [String : Commit]? = nil,
-        commitDict5: [String : Commit]? = nil,
-        commitDict6: [String : Commit]? = nil,
-        commitDict7: [String : Commit]? = nil,
-        commitDict8: [String : Commit]? = nil,
-        commitDict9: [String : Commit]? = nil,
-        commitDict10: [String : Commit]? = nil,
-        commitDict11: [String : Commit]? = nil,
-        commitDict12: [String : Commit]? = nil
+        commitDict: [String : Commit]? = nil
     ) {
         self.originalOutput = originalOutput
         self.commits = commits
         
-        self.commitDict = commitDict ?? [:]
-        self.commitDict3 = commitDict3 ?? [:]
-        self.commitDict4 = commitDict4 ?? [:]
-        self.commitDict5 = commitDict5 ?? [:]
-        self.commitDict6 = commitDict6 ?? [:]
-        self.commitDict7 = commitDict7 ?? [:]
-        self.commitDict8 = commitDict8 ?? [:]
-        self.commitDict9 = commitDict9 ?? [:]
-        self.commitDict10 = commitDict10 ?? [:]
-        self.commitDict11 = commitDict11 ?? [:]
-        self.commitDict12 = commitDict12 ?? [:]
-        
-        if let commits = commits, (commitDict == nil ||
-            commitDict3 == nil ||
-            commitDict4 == nil ||
-            commitDict5 == nil ||
-            commitDict6 == nil ||
-            commitDict7 == nil ||
-            commitDict8 == nil ||
-            commitDict9 == nil ||
-            commitDict10 == nil ||
-            commitDict11 == nil ||
-            commitDict12 == nil) {
-            
+        if let commitDict = commitDict {
+            self.commitDict = commitDict
+        } else if let commits = commits {
             for commit in commits {
-                
-                if commitDict == nil {
-                    self.commitDict?[commit.objectHash] = commit
-                }
-                if commitDict3 == nil {
-                    self.commitDict3?[String(commit.objectHash.prefix(3)) + "#"] = commit
-                }
-                if commitDict4 == nil {
-                    self.commitDict4?[String(commit.objectHash.prefix(4)) + "#"] = commit
-                }
-                if commitDict5 == nil {
-                    self.commitDict5?[String(commit.objectHash.prefix(5)) + "#"] = commit
-                }
-                if commitDict6 == nil {
-                    self.commitDict6?[String(commit.objectHash.prefix(6)) + "#"] = commit
-                }
-                if commitDict7 == nil {
-                    self.commitDict7?[String(commit.objectHash.prefix(7)) + "#"] = commit
-                }
-                if commitDict8 == nil {
-                    self.commitDict8?[String(commit.objectHash.prefix(8)) + "#"] = commit
-                }
-                if commitDict9 == nil {
-                    self.commitDict9?[String(commit.objectHash.prefix(9)) + "#"] = commit
-                }
-                if commitDict10 == nil {
-                    self.commitDict10?[String(commit.objectHash.prefix(10)) + "#"] = commit
-                }
-                if commitDict11 == nil {
-                    self.commitDict11?[String(commit.objectHash.prefix(11)) + "#"] = commit
-                }
-                if commitDict12 == nil {
-                    self.commitDict12?[String(commit.objectHash.prefix(12)) + "#"] = commit
-                }
-                
+                self.commitDict?[commit.objectHash] = commit
             }
-            
         }
-    }
-    
-    public func commit(forShort hash: String) -> Commit? {
-        if let commit =  self.commitDict3?["\(hash)#"] {
-            return commit
-        }
-        if let commit =  self.commitDict4?["\(hash)#"] {
-            return commit
-        }
-        if let commit =  self.commitDict5?["\(hash)#"] {
-            return commit
-        }
-        if let commit =  self.commitDict6?["\(hash)#"] {
-            return commit
-        }
-        if let commit =  self.commitDict7?["\(hash)#"] {
-            return commit
-        }
-        if let commit =  self.commitDict8?["\(hash)#"] {
-            return commit
-        }
-        if let commit =  self.commitDict9?["\(hash)#"] {
-            return commit
-        }
-        if let commit =  self.commitDict10?["\(hash)#"] {
-            return commit
-        }
-        if let commit =  self.commitDict11?["\(hash)#"] {
-            return commit
-        }
-        if let commit =  self.commitDict12?["\(hash)#"] {
-            return commit
-        }
-        return nil
     }
 }
 
 public class LogResultParser: GitParser, Parser {
+    
+    /// This parser needs this format to parse the commit correctly.
+    public static let prettyFormat = "<<<----mCommitm---->>>%n%h%n%d%n%H%n%P%n%an <%ae>%n%aD%n%cn <%ce>%n%cD%n%B"
     
     public typealias Success = LogResult
     
@@ -161,37 +53,20 @@ public class LogResultParser: GitParser, Parser {
             return .success(LogResult(originalOutput: result, commits: []))
         }
         
+        if !result.contains("<<<----mCommitm---->>>") {
+            return .failure(ParseError.wrongLogFormat)
+        }
+        
         do {
-            let matches = result.find(rgx: #"commit\s([0-9a-fA-F]{40})(?:\s\(([^\n]+)\))?(?:\nMerge:\s([A-Fa-f0-9]{7,12})\s([A-Fa-f0-9]{7,12}))?\nAuthor:\s([^\n]+)\s<([^\n]*)>\nDate:\s+([^\n]+)\n([\s\S]*?)(?=commit\s[0-9a-fA-F]{40}(?:\s\([^\n]+\))?(?:\nMerge:\s([A-Fa-f0-9]{7,12})\s([A-Fa-f0-9]{7,12}))?\nAuthor:[^\n]+\nDate:[^\n]+|\Z)"#, options: .anchored)
+            let matches = result.find(rgx: #"([0-9a-fA-F]+)\n(?:\s\(([^\n]+)\))?\n([0-9a-fA-F]{40})\n((?:[0-9a-fA-F]{40}\s?)*)\n([^\n]+)\s<([^\n]*)>\n([^\n]+)\n([^\n]+)\s<([^\n]*)>\n([^\n]+)\n([\s\S]*?)(?=<<<----mCommitm---->>>|\Z)"#)
             
             var commits = [Commit]()
             var commitsLong = [String: Commit]()
-            
-            var commits3 = [String: Commit]()
-            var commits4 = [String: Commit]()
-            var commits5 = [String: Commit]()
-            var commits6 = [String: Commit]()
-            var commits7 = [String: Commit]()
-            var commits8 = [String: Commit]()
-            var commits9 = [String: Commit]()
-            var commits10 = [String: Commit]()
-            var commits11 = [String: Commit]()
-            var commits12 = [String: Commit]()
             
             for match in matches {
                 let commit = try parseCommit(part: match)
                 commits.append(commit)
                 commitsLong[commit.objectHash] = commit
-                commits3[String(commit.objectHash.prefix(3)) + "#"] = commit
-                commits4[String(commit.objectHash.prefix(4)) + "#"] = commit
-                commits5[String(commit.objectHash.prefix(5)) + "#"] = commit
-                commits6[String(commit.objectHash.prefix(6)) + "#"] = commit
-                commits7[String(commit.objectHash.prefix(7)) + "#"] = commit
-                commits8[String(commit.objectHash.prefix(8)) + "#"] = commit
-                commits9[String(commit.objectHash.prefix(9)) + "#"] = commit
-                commits10[String(commit.objectHash.prefix(10)) + "#"] = commit
-                commits11[String(commit.objectHash.prefix(11)) + "#"] = commit
-                commits12[String(commit.objectHash.prefix(12)) + "#"] = commit
             }
             
             return .success(
@@ -211,7 +86,12 @@ public class LogResultParser: GitParser, Parser {
     }
     
     private func parseCommit(part: RgxResult) throws -> Commit {
-        guard let commitHash = part[1] else {
+        
+        guard let shortHash = part[1] else {
+            throw ParseError.commitWithoutCommmitHash
+        }
+        
+        guard let commitHash = part[3] else {
             throw ParseError.commitWithoutCommmitHash
         }
         
@@ -219,27 +99,33 @@ public class LogResultParser: GitParser, Parser {
             throw ParseError.commitWithoutAuthor
         }
         
-        guard let date = part[7]?.toDate(format: "EEE MMM dd HH:mm:ss yyyy ZZZZ") else {
+        guard let authorDate = part[7]?.toDate(format: "EEE, dd MMM yyyy HH:mm:ss ZZZZ") else {
+            throw ParseError.commitWithoutDate
+        }
+        
+        guard let committerName = part[8], let committerEmail = part[9] else {
+            throw ParseError.commitWithoutAuthor
+        }
+        
+        guard let committerDate = part[10]?.toDate(format: "EEE, dd MMM yyyy HH:mm:ss ZZZZ") else {
             throw ParseError.commitWithoutDate
         }
         
         let (branches, tags) = parseBranchesAndTags(in: part[2] ?? "")
         
-        let merges: [String] = [
-            part[3],
-            part[4]
-        ]
-            .filter { $0 != nil }
-            .map { $0! }
+        let parents: [String] = part[4]?.split(separator: " ").map({ String($0) }).filter({ !$0.isEmpty }) ?? []
         
         return Commit(
             objectHash: commitHash,
-            message: part[8]?.replace(rgx: #"\n\s*"#, with: "\n").trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+            shortHash: shortHash,
+            message: part[11]?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
             author: Person(name: authorName, email: authorEmail),
-            date: date,
+            authorDate: authorDate,
+            committer: Person(name: committerName, email: committerEmail),
+            committerDate: committerDate,
             branches: branches,
             tags: tags,
-            merges: merges
+            parents: parents
         )
     }
     
@@ -267,11 +153,5 @@ public class LogResultParser: GitParser, Parser {
             }
         
         return (branches, tags)
-    }
-    
-    private func parseMessage(in part: String) -> String {
-        let rawMessage = part.find(rgx: #"Date:\s+.*\n\n((?:.|\n)*)"#).first?[1] ?? ""
-        
-        return rawMessage.replace(rgx: #"\n\s*"#, with: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
