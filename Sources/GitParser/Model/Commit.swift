@@ -8,7 +8,7 @@
 import Foundation
 
 public class Commit: HasHash {
-    public var hash: String
+    public var objectHash: String
     public var message: String
     public var author: Person
     public var date: Date
@@ -16,8 +16,8 @@ public class Commit: HasHash {
     public var tags: [String]
     public var merges: [String]
     
-    init(
-        hash: String,
+    public init(
+        objectHash: String,
         message: String,
         author: Person,
         date: Date,
@@ -25,7 +25,7 @@ public class Commit: HasHash {
         tags: [String],
         merges: [String]
     ) {
-        self.hash = hash
+        self.objectHash = objectHash
         self.message = message
         self.author = author
         self.date = date

@@ -8,6 +8,18 @@
 import Foundation
 
 /// Represents objects that have a hash.
-public protocol HasHash {
-    var hash: String { get }
+public protocol HasHash: Hashable {
+    var objectHash: String { get }
+}
+
+public extension HasHash {
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(objectHash)
+    }
+
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.objectHash == rhs.objectHash
+    }
+    
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct LogResult: ParseResult {
+public class LogResult: ParseResult {
     public var originalOutput: String
     
     public var commits: [Commit]?
@@ -17,6 +17,13 @@ public struct LogResult: ParseResult {
     
     /// Ther commits with the commit has as key.
     public var commitLongDict: [String: Commit]?
+    
+    public init(originalOutput: String, commits: [Commit]? = nil, commitShortDict: [String : Commit]? = nil, commitLongDict: [String : Commit]? = nil) {
+        self.originalOutput = originalOutput
+        self.commits = commits
+        self.commitShortDict = commitShortDict
+        self.commitLongDict = commitLongDict
+    }
 }
 
 public class LogResultParser: GitParser, Parser {
@@ -46,8 +53,8 @@ public class LogResultParser: GitParser, Parser {
             for match in matches {
                 let commit = try parseCommit(part: match)
                 commits.append(commit)
-                commitsLong[commit.hash] = commit
-                commitsShort[String(commit.hash.prefix(9))] = commit
+                commitsLong[commit.objectHash] = commit
+                commitsShort[String(commit.objectHash.prefix(9))] = commit
             }
             
             return .success(
@@ -90,7 +97,7 @@ public class LogResultParser: GitParser, Parser {
             .map { $0! }
         
         return Commit(
-            hash: commitHash,
+            objectHash: commitHash,
             message: part[8]?.replace(rgx: #"\n\s*"#, with: "\n").trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
             author: Person(name: authorName, email: authorEmail),
             date: date,

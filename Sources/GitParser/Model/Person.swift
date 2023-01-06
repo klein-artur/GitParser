@@ -9,6 +9,11 @@ import Foundation
 
 /// Representing a Person like the Author.
 public struct Person {
-    let name: String
-    let email: String
+    public let name: String
+    public let email: String
+    
+    public init(name: String, email: String) {
+        self.name = name
+        self.email = email
+    }
 }
