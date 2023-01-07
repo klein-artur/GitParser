@@ -36,7 +36,7 @@ public class LogResult: ParseResult {
 public class LogResultParser: GitParser, Parser {
     
     /// This parser needs this format to parse the commit correctly.
-    public static let prettyFormat = "<<<----mCommitm---->>>%n%h%n%d%n%H%n%P%n%an <%ae>%n%aD%n%cn <%ce>%n%cD%n%B"
+    public static let prettyFormat = "<<<----mCommitm---->>>%n%h%n%d%n%H%n%P%n%an <%ae>%n%aD%n%cn <%ce>%n%cD%n%s%n%B"
     
     public typealias Success = LogResult
     
@@ -58,7 +58,7 @@ public class LogResultParser: GitParser, Parser {
         }
         
         do {
-            let matches = result.find(rgx: #"([0-9a-fA-F]+)\n(?:\s\(([^\n]+)\))?\n([0-9a-fA-F]{40})\n((?:[0-9a-fA-F]{40}\s?)*)\n([^\n]+)\s<([^\n]*)>\n([^\n]+)\n([^\n]+)\s<([^\n]*)>\n([^\n]+)\n([\s\S]*?)(?=<<<----mCommitm---->>>|\Z)"#)
+            let matches = result.find(rgx: #"([0-9a-fA-F]+)\n(?:\s\(([^\n]+)\))?\n([0-9a-fA-F]{40})\n((?:[0-9a-fA-F]{40}\s?)*)\n([^\n]+)\s<([^\n]*)>\n([^\n]+)\n([^\n]+)\s<([^\n]*)>\n([^\n]+)\n(.*)\n([\s\S]*?)(?=<<<----mCommitm---->>>|\Z)"#)
             
             var commits = [Commit]()
             var commitsLong = [String: Commit]()
@@ -118,7 +118,8 @@ public class LogResultParser: GitParser, Parser {
         return Commit(
             objectHash: commitHash,
             shortHash: shortHash,
-            message: part[11]?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+            subject: part[11]?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
+            message: part[12]?.trimmingCharacters(in: .whitespacesAndNewlines) ?? "",
             author: Person(name: authorName, email: authorEmail),
             authorDate: authorDate,
             committer: Person(name: committerName, email: committerEmail),

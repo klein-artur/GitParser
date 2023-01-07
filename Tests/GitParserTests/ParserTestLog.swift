@@ -34,6 +34,7 @@ final class ParserTestLog: XCTestCase {
         John Doe <johndoe.thats@testl.com>
         Fri, 6 Jan 2023 13:07:35 +0100
         More hash handling improvements
+        More hash handling improvements
         <<<----mCommitm---->>>
         da4830b
         
@@ -43,6 +44,7 @@ final class ParserTestLog: XCTestCase {
         Fri, 6 Jan 2023 12:15:27 +0100
         John Doe <johndoe.thats@testl.com>
         Fri, 6 Jan 2023 12:15:27 +0100
+        improved Hash Handling
         improved Hash Handling
         <<<----mCommitm---->>>
         8258f96
@@ -54,6 +56,7 @@ final class ParserTestLog: XCTestCase {
         John Doe <johndoe.thats@testl.com>
         Thu, 5 Jan 2023 01:37:33 +0100
         Merge branch 'main' of github.com:klein-artur/GitParser
+        Merge branch 'main' of github.com:klein-artur/GitParser
         <<<----mCommitm---->>>
         b4dd6c9
         
@@ -63,6 +66,7 @@ final class ParserTestLog: XCTestCase {
         Thu, 5 Jan 2023 01:37:17 +0100
         John Doe <johndoe.thats@testl.com>
         Thu, 5 Jan 2023 01:37:17 +0100
+        Adding parent commits to commit
         Adding parent commits to commit
         And more
         
@@ -80,6 +84,7 @@ final class ParserTestLog: XCTestCase {
         Wed, 4 Jan 2023 22:15:24 +0100
         GitHub <noreply@github.com>
         Wed, 4 Jan 2023 22:15:24 +0100
+        Update README.md
         Update README.md<<<----mCommitm---->>>
         258ae77
         
@@ -89,6 +94,7 @@ final class ParserTestLog: XCTestCase {
         Wed, 4 Jan 2023 14:17:40 +0100
         John Doe <johndoe.thats@testl.com>
         Wed, 4 Jan 2023 14:17:40 +0100
+        parsing commitlist
         parsing commitlist
         <<<----mCommitm---->>>
         3c39318
@@ -100,6 +106,7 @@ final class ParserTestLog: XCTestCase {
         John Doe <johndoe.thats@testl.com>
         Tue, 3 Jan 2023 23:26:46 +0100
         Parsing logs
+        Parsing logs
         <<<----mCommitm---->>>
         01edf9e
         
@@ -109,6 +116,7 @@ final class ParserTestLog: XCTestCase {
         Tue, 3 Jan 2023 00:18:13 +0100
         John Doe <johndoe.thats@testl.com>
         Tue, 3 Jan 2023 17:14:57 +0100
+        Initial Commit
         Initial Commit
         """
         
@@ -149,5 +157,6 @@ final class ParserTestLog: XCTestCase {
         """
         
         XCTAssertEqual(parsedLog.commits?[3].message, otherTest)
+        XCTAssertEqual(parsedLog.commits?[3].subject, "Adding parent commits to commit")
     }
 }

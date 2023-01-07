@@ -10,6 +10,7 @@ import Foundation
 public class Commit: HasHash {
     public var objectHash: String
     public var shortHash: String
+    public var subject: String
     public var message: String
     public var author: Person
     public var authorDate: Date
@@ -22,6 +23,7 @@ public class Commit: HasHash {
     public init(
         objectHash: String,
         shortHash: String,
+        subject: String,
         message: String,
         author: Person,
         authorDate: Date,
@@ -33,6 +35,7 @@ public class Commit: HasHash {
     ) {
         self.objectHash = objectHash
         self.shortHash = shortHash
+        self.subject = subject
         self.message = message
         self.author = author
         self.authorDate = authorDate
